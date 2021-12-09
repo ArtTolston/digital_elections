@@ -9,10 +9,8 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from ..NetworkСonnection.client import Client
-from Crypto.Hash import SHA256
+from NetworkСonnection.client import Client
 from Crypto.PublicKey import RSA
-from Crypto.Signature import pkcs1_15
 import os
 import os.path
 
@@ -131,9 +129,12 @@ class Ui_MainWindow(object):
         self.updateButton.setText(_translate("MainWindow", "Обновить информацию"))
         self.resultLabel.setText(_translate("MainWindow", "Победил ответ...."))
 
+    def GeneratePubKey(self):
+        return "ASD"
+
     def get_fio(self):
         self.fio = self.fioEdit.text().lower()
-        self.client.run(self.fio, self.GeneratePubKey())
+        self.client.send_msg(self.fio, self.GeneratePubKey())
         print(self.fio)
 
 
@@ -149,6 +150,7 @@ class Ui_MainWindow(object):
             f.write(key.export_key('PEM', passphrase=self.passphrase))
         self.public_key = key.public_key().export_key('PEM')
         print(self.public_key)
+
 
 
 if __name__ == "__main__":
