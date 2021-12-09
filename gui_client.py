@@ -9,6 +9,11 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from Crypto.Hash import SHA256
+from Crypto.PublicKey import RSA
+from Crypto.Signature import pkcs1_15
+import os
+import os.path
 
 
 class Ui_MainWindow(object):
@@ -119,9 +124,12 @@ class Ui_MainWindow(object):
         ####################################
 
         self.fio = ""
+        self.passphrase = "NiktoNeUgadaet"
+        self.public_key = ""
 
         self.approveButton.clicked.connect(self.get_fio)
         self.updateButton.clicked.connect(self.update_info)
+        self.createDESButton.clicked.connect(self.create_des)
 
 
     def retranslateUi(self, MainWindow):
@@ -153,6 +161,14 @@ class Ui_MainWindow(object):
         pass
 
 
+    def create_des(self):
+        if os.path.exists("./private_key"):
+            return
+        key = RSA.generate(1024, os.urandom)
+        with open("./private_key", "wb") as f:
+            f.write(key.export_key('PEM', passphrase=self.passphrase))
+        self.public_key = key.public_key().export_key('PEM')
+        print(self.public_key)
 
 if __name__ == "__main__":
     import sys
