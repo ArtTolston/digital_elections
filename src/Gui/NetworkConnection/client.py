@@ -32,7 +32,7 @@ class Client:
         return data
 
     def send_msg(self, fio, pub_key):
-        data = {"fio": fio, "key": pub_key}
+        data = {"fio": fio, "public_key": pub_key}
         self._send(json.dumps(data).encode('utf-8'))
         response = self._read().decode()
         if not response.startswith('OK'):
