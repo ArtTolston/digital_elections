@@ -134,8 +134,9 @@ class Ui_MainWindow(object):
 
     def get_fio(self):
         self.fio = self.fioEdit.text().lower()
-        self.client.send_msg(self.fio, self.GeneratePubKey())
-        print(self.fio)
+        self.client.add_user(self.fio, self.GeneratePubKey())
+        # self.client.send_msg(self.fio, self.GeneratePubKey())
+        # print(self.fio)
 
 
     def update_info(self):
@@ -160,4 +161,5 @@ if __name__ == "__main__":
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
+    # ui.client.run()
     sys.exit(app.exec_())
