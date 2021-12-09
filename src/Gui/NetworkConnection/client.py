@@ -45,7 +45,7 @@ class Client:
         # return response
 
     def update_info(self):
-
+        pass
 
     # def run(self):
     #     while True:

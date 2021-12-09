@@ -18,6 +18,7 @@ class Server:
         self.db_name = db_name
         if not os.path.exists(self.db_name):
             create_db(self.db_name)
+        self.state = True
         try:
             self.socket_server.bind((addr, port))
             self.socket_server.listen(10)
