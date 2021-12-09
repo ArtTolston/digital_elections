@@ -145,5 +145,5 @@ if __name__ == "__main__":
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
-    app.exec_()
-    sys.exit(ui.server.run())
+    ui.server.run()
+    sys.exit(app.exec_())
