@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Form implementation generated from reading ui file 'gui_client.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.6
@@ -42,21 +44,6 @@ class Ui_MainWindow(object):
         self.label_2.setFont(font)
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
-        self.votingInfoWidget = QtWidgets.QTableWidget(self.centralwidget)
-        self.votingInfoWidget.setGeometry(QtCore.QRect(60, 100, 291, 192))
-        self.votingInfoWidget.setObjectName("votingInfoWidget")
-        self.votingInfoWidget.setColumnCount(2)
-        self.votingInfoWidget.setRowCount(0)
-        item = QtWidgets.QTableWidgetItem()
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        item.setFont(font)
-        self.votingInfoWidget.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        item.setFont(font)
-        self.votingInfoWidget.setHorizontalHeaderItem(1, item)
         self.createDESButton = QtWidgets.QPushButton(self.centralwidget)
         self.createDESButton.setGeometry(QtCore.QRect(480, 50, 151, 41))
         font = QtGui.QFont()
@@ -81,12 +68,6 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.noBox.setFont(font)
         self.noBox.setObjectName("noBox")
-        self.wantVoteButton = QtWidgets.QPushButton(self.centralwidget)
-        self.wantVoteButton.setGeometry(QtCore.QRect(55, 316, 301, 31))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.wantVoteButton.setFont(font)
-        self.wantVoteButton.setObjectName("wantVoteButton")
         self.voteButton = QtWidgets.QPushButton(self.centralwidget)
         self.voteButton.setGeometry(QtCore.QRect(430, 270, 201, 31))
         font = QtGui.QFont()
@@ -94,17 +75,23 @@ class Ui_MainWindow(object):
         self.voteButton.setFont(font)
         self.voteButton.setObjectName("voteButton")
         self.updateButton = QtWidgets.QPushButton(self.centralwidget)
-        self.updateButton.setGeometry(QtCore.QRect(40, 490, 321, 31))
+        self.updateButton.setGeometry(QtCore.QRect(40, 370, 321, 31))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.updateButton.setFont(font)
         self.updateButton.setObjectName("updateButton")
         self.resultLabel = QtWidgets.QLabel(self.centralwidget)
-        self.resultLabel.setGeometry(QtCore.QRect(430, 380, 201, 20))
+        self.resultLabel.setGeometry(QtCore.QRect(430, 320, 201, 20))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.resultLabel.setFont(font)
         self.resultLabel.setObjectName("resultLabel")
+        self.listWidget = QtWidgets.QListWidget(self.centralwidget)
+        self.listWidget.setGeometry(QtCore.QRect(70, 110, 256, 191))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.listWidget.setFont(font)
+        self.listWidget.setObjectName("listWidget")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 754, 18))
@@ -116,7 +103,6 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
         ####################################
         #           user code
         ####################################
@@ -129,26 +115,19 @@ class Ui_MainWindow(object):
         self.updateButton.clicked.connect(self.update_info)
         self.createDESButton.clicked.connect(self.create_des)
 
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "Твое ФИО"))
         self.approveButton.setText(_translate("MainWindow", "Подтвердить"))
         self.label_2.setText(_translate("MainWindow", "Участники голосования"))
-        item = self.votingInfoWidget.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "приглашенные"))
-        item = self.votingInfoWidget.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "подтвержденные"))
         self.createDESButton.setText(_translate("MainWindow", "Создать Ключи ЭЦП"))
         self.questionLabel.setText(_translate("MainWindow", "Вопрос голосования"))
         self.yesBox.setText(_translate("MainWindow", " Да (манда)"))
         self.noBox.setText(_translate("MainWindow", " Нет (пидора ответ)"))
-        self.wantVoteButton.setText(_translate("MainWindow", "Хочу участвовать!"))
         self.voteButton.setText(_translate("MainWindow", "Press F to Vote"))
         self.updateButton.setText(_translate("MainWindow", "Обновить информацию"))
         self.resultLabel.setText(_translate("MainWindow", "Победил ответ...."))
-
 
     def get_fio(self):
         self.fio = self.fioEdit.text().lower();
@@ -167,6 +146,7 @@ class Ui_MainWindow(object):
             f.write(key.export_key('PEM', passphrase=self.passphrase))
         self.public_key = key.public_key().export_key('PEM')
         print(self.public_key)
+
 
 if __name__ == "__main__":
     import sys
