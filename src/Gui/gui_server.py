@@ -9,9 +9,9 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from NetworkСonnection.server import Server
 import os
 from db_api import create_db
-
 
 
 class Ui_MainWindow(object):
@@ -102,6 +102,7 @@ class Ui_MainWindow(object):
         if not os.path.exists(self.db_name):
             create_db(self.db_name)
         self.allWidget
+        self.server = Server()
 
 
     def retranslateUi(self, MainWindow):
@@ -119,7 +120,7 @@ class Ui_MainWindow(object):
 
     def add_elector(self):
         fio = self.fioEdit.text()
-        self.electorsWidget
+        var = self.electorsWidget
 
 if __name__ == "__main__":
     import sys
@@ -128,4 +129,5 @@ if __name__ == "__main__":
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
+    ui.server.run()
     sys.exit(app.exec_())

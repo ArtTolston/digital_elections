@@ -35,10 +35,6 @@ class Client:
         data = {"fio": fio, "key": pub_key}
         self._send(json.dumps(data).encode('utf-8'))
         response = self._read().decode()
-        if response != 'OK':
+        if not response.startswith('OK'):
             print('Incorrect response!')
         return response
-
-
-with socket.create_connection(("127.0.0.1", 10001)) as sock:
-    sock.sendall("ping".encode("utf8"))
