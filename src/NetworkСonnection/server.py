@@ -1,3 +1,4 @@
+import json
 import socket
 import threading
 
@@ -25,15 +26,12 @@ class Server:
             with conn:
                 print(f'[SERVER]: Connected: {addr}')
                 while True:
-                    msg = conn.recv(self.buffer_size).decode()
-                    if not msg:
+                    data = conn.recv(json.loads('fio-pubkey'))
+                    if not data:
                         break
                     # PAYLOAD CODE HERE ###########################################
-                    print(msg)
                     conn.sendall('OK')
                     ###############################################################
-                    if msg.lower() == 'bye':
-                        break
                 break
 
 

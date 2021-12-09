@@ -1,5 +1,6 @@
+import json
 import socket
-from Storage import *
+# from Storage import *
 
 
 class ClientError(Exception):
@@ -30,12 +31,8 @@ class Client:
             raise ClientError("Error reading data from socket", err)
         return data
 
-    def send_msg(self, msg):
-        self._send(msg.encode('utf-8'))
-        response = self._read().decode()
-        # if response != 'OK':
-        #	print('Incorrect response!')
-        return response
+    def send_msg(self, fio, pub_key):
+        self._send(json.dumps(['fio-pubkey', {fio: pub_key}], sort_keys=True))
 
     def run(self, fio, pub_key):
         while True:

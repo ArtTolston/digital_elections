@@ -27,7 +27,7 @@ def parse():
     return parser.parse_args()
 
 
-def put(storage_path, key, value):
+def put(key, value):
     data = read_data(storage_path)
     data[key] = data.get(key, list())
     data[key].append(value)
