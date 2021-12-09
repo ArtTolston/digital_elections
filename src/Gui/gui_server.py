@@ -11,8 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from NetworkСonnection.server import Server
 import os
-from db_api import create_db
-
+from NetworkСonnection.db_api import create_db, get_users
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -86,6 +85,12 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.label_3.setFont(font)
         self.label_3.setObjectName("label_3")
+        self.updateButton = QtWidgets.QPushButton(self.centralwidget)
+        self.updateButton.setGeometry(QtCore.QRect(120, 500, 151, 20))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.updateButton.setFont(font)
+        self.updateButton.setObjectName("updateButton")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 802, 18))
@@ -94,16 +99,16 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.addButton.clicked.connect(self.add_elector);
-        self.db_name = "voting.db"
-        if not os.path.exists(self.db_name):
-            create_db(self.db_name)
+        self.addButton.clicked.connect(self.add_votes);
+        self.updateButton.clicked.connect(self.update_voters)
+        self.finishButton.clicked.connect(self.finish)
         self.allWidget
-        self.server = Server()
-
+        self.db_name = "voting.db"
+        self.server = Server(db_name="voting.db")
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -117,10 +122,21 @@ class Ui_MainWindow(object):
         self.noLabel.setText(_translate("MainWindow", "0.0%"))
         self.addButton.setText(_translate("MainWindow", "Добавить избирателя"))
         self.label_3.setText(_translate("MainWindow", "Все участники системы"))
+        self.updateButton.setText(_translate("MainWindow", "Обновить"))
 
-    def add_elector(self):
+    def add_voters(self):
         fio = self.fioEdit.text()
         var = self.electorsWidget
+
+    def update_voters(self):
+        self.allWidget.clear()
+        users = get_users()
+        for user in users:
+            self.allWidget.addItem(QListWidgetItem(user["fio"]))
+
+    def finish(self):
+        pass
+
 
 if __name__ == "__main__":
     import sys
