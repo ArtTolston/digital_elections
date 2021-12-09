@@ -26,10 +26,11 @@ class Server:
             with conn:
                 print(f'[SERVER]: Connected: {addr}')
                 while True:
-                    data = conn.recv(json.loads('fio-pubkey'))
+                    msg = conn.recv(self.buffer_size).decode()
                     if not data:
                         break
                     # PAYLOAD CODE HERE ###########################################
+                    data = json.loads(msg)
                     conn.sendall('OK')
                     ###############################################################
                 break

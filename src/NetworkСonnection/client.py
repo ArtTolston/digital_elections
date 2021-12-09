@@ -32,14 +32,12 @@ class Client:
         return data
 
     def send_msg(self, fio, pub_key):
-        self._send(json.dumps(['fio-pubkey', {fio: pub_key}], sort_keys=True))
-
-    def run(self, fio, pub_key):
-        while True:
-            msg = fio + pub_key + '\n'
-            self.send_msg(msg)
-            if not msg:
-                break
+        data = {"fio": fio, "key": pub_key}
+        self._send(json.dumps(data).encode('utf-8'))
+        response = self._read().decode()
+        if response != 'OK':
+            print('Incorrect response!')
+        return response
 
 
 with socket.create_connection(("127.0.0.1", 10001)) as sock:
