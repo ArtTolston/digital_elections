@@ -7,6 +7,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from ..NetworkСonnection.client import Client
 
 
 class Ui_MainWindow(object):
@@ -117,6 +118,7 @@ class Ui_MainWindow(object):
         ####################################
 
         self.fio = ""
+        self.client = Client()
 
         self.approveButton.clicked.connect(self.get_fio)
         self.updateButton.clicked.connect(self.update_info)
@@ -141,9 +143,12 @@ class Ui_MainWindow(object):
         self.updateButton.setText(_translate("MainWindow", "Обновить информацию"))
         self.resultLabel.setText(_translate("MainWindow", "Победил ответ...."))
 
+    def GeneratePubKey(self):
+        return "ACVX12"
 
     def get_fio(self):
-        self.fio = self.fioEdit.text().lower();
+        self.fio = self.fioEdit.text().lower()
+        self.client.run(self.fio, self.GeneratePubKey())
         print(self.fio)
 
 
