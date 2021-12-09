@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from ..NetworkСonnection.client import Client
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
@@ -108,6 +109,7 @@ class Ui_MainWindow(object):
         ####################################
 
         self.fio = ""
+        self.client = Client()
         self.passphrase = "NiktoNeUgadaet"
         self.public_key = ""
 
@@ -130,7 +132,8 @@ class Ui_MainWindow(object):
         self.resultLabel.setText(_translate("MainWindow", "Победил ответ...."))
 
     def get_fio(self):
-        self.fio = self.fioEdit.text().lower();
+        self.fio = self.fioEdit.text().lower()
+        self.client.run(self.fio, self.GeneratePubKey())
         print(self.fio)
 
 
