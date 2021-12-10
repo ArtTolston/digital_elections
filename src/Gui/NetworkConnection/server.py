@@ -11,6 +11,7 @@ class ServerError(Exception):
     pass
 
 
+
 class Server(QObject):
     finished = pyqtSignal()
 
@@ -64,5 +65,6 @@ class Server(QObject):
                                   args=(conn, addr))
             th.start()
             if not self.is_active:
+
                 break
         self.finished.emit()
