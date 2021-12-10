@@ -118,10 +118,11 @@ class Ui_MainWindow(object):
         self.approveButton.clicked.connect(self.get_fio)
         self.updateButton.clicked.connect(self.update_info)
         self.createDESButton.clicked.connect(self.create_des)
+        self.voteButton.clicked.connect(self.vote)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Client_blyat"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Client"))
         self.label.setText(_translate("MainWindow", "Твое ФИО"))
         self.approveButton.setText(_translate("MainWindow", "Подтвердить"))
         self.label_2.setText(_translate("MainWindow", "Участники голосования"))
@@ -139,7 +140,6 @@ class Ui_MainWindow(object):
     def update_info(self):
         self.client.update_info()
 
-
     def create_des(self):
         key = RSA.generate(1024, os.urandom)
         if not os.path.exists("./private_key"):
@@ -148,6 +148,16 @@ class Ui_MainWindow(object):
         self.public_key = key.public_key().export_key("PEM")
         print(self.public_key)
         self.client.add_user(self.fio, self.public_key.decode())
+
+    def vote(self):
+        if self.noBox.isChecked() and self.yesBox.isChecked():
+            self.client.bye()
+        elif self.noBox.isChecked():
+            self.client.vote(False)
+        elif self.yesBox.isChecked():
+            self.client.vote(True)
+        else:
+            self.client.bye()
 
 
 if __name__ == "__main__":

@@ -11,7 +11,6 @@ class ServerError(Exception):
     pass
 
 
-
 class Server(QObject):
     finished = pyqtSignal()
 
@@ -43,21 +42,18 @@ class Server(QObject):
                 if not msg:
                     break
                 command = json.loads(msg)
-                if self.t - time.time() > 15:
-                    print('ЖОПА ВЗЛОМАНА')
-                    exit()
                 match command[0]:
-
-                    case "add":
+                    case "ADD":
                         data = command[1]
-                        print(data)
                         print(data["public_key"])
                         public_key = data["public_key"].encode()
                         add_user(self.db_name, table="voters", fio=data["fio"], public_key=public_key)
-                    case "update":
-
+                    case "UPDATE":
                         conn.sendall('OK'.encode('utf-8'))
-                    case "":
+                    case "VOTE":
+                        data = command[1]
+                        print(data)
+                    case "BYE":
                         break
 
     def run(self):
@@ -68,6 +64,5 @@ class Server(QObject):
                                   args=(conn, addr))
             th.start()
             if not self.is_active:
-
                 break
         self.finished.emit()
