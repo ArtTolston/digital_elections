@@ -45,10 +45,10 @@ class Client:
             print('Incorrect response!')
         print(response)
 
-    # def run(self):
-    #     while True:
-    #         match self.action:
-    #             case "add_user":
-    #                 self.add_user(fio, pub_key)
-    #             case _:
-    #                 raise ClientError("Incorrect request from client")
+    def vote(self, var):
+        command = ("VOTE", var)
+        self._send(json.dumps(command).encode('utf-8'))
+
+    def bye(self):
+        command = ("BYE",)
+        self._send(json.dumps(command).encode('utf-8'))
