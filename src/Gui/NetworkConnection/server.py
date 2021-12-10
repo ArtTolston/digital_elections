@@ -4,6 +4,7 @@ import threading
 from PyQt5.QtCore import QObject, pyqtSignal
 from .db_api import add_user, create_db
 import os
+import time
 
 
 class ServerError(Exception):
@@ -21,6 +22,7 @@ class Server(QObject):
         self.socket_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.state = True
         self.db_name = db_name
+        self.t = time.time()
         if not os.path.exists(self.db_name):
             create_db(self.db_name)
         self.state = -1
@@ -39,11 +41,20 @@ class Server(QObject):
                 msg = conn.recv(self.buffer_size).decode()
                 if not msg:
                     break
-                data = json.loads(msg)
-                conn.sendall(('OK' + data["fio"]).encode('utf-8'))
-                if "fio" in data and "public_key" in data:
-                    add_user(self.db_name, data["fio"], data["public_key"])
-                break
+                command = json.loads(msg)
+                if self.t - time.time() > 15:
+                    print('ЖОПА ВЗЛОМАНА')
+                    exit()
+                match command[0]:
+
+                    case "add":
+                        data = command[1]
+                        print(data)
+                        # add_user(self.db_name, data["fio"], data["public_key"])
+                    case "update":
+                        conn.sendall('OK'.encode('utf-8'))
+                    case "":
+                        break
 
     def run(self):
         self.is_active = True
