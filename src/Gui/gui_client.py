@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from NetworkСonnection.client import Client
+from NetworkConnection.client import Client
 from Crypto.PublicKey import RSA
 import os
 import os.path
@@ -134,8 +134,8 @@ class Ui_MainWindow(object):
 
     def get_fio(self):
         self.fio = self.fioEdit.text().lower()
-        self.client.send_msg(self.fio, self.GeneratePubKey())
-        print(self.fio)
+        self.client.add_user(self.fio, self.GeneratePubKey())
+        # print(self.fio)
 
 
     def update_info(self):
