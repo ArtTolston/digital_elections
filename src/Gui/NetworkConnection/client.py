@@ -1,6 +1,5 @@
 import json
 import socket
-# from Storage import *
 
 
 class ClientError(Exception):
@@ -33,21 +32,18 @@ class Client:
             raise ClientError("Error reading data from socket", err)
         return data
 
-    def setAction(self, button):
-        self.action = button
-
     def add_user(self, fio, pub_key):
-        data = {"fio": fio, "public_key": pub_key}
-        self._send(json.dumps(data).encode('utf-8'))
-        print("send_msg")
+        command = ("add", {"fio": fio, "public_key": pub_key})
+        print(json.dumps(command))
+        self._send(json.dumps(command).encode('utf-8'))
+
+    def update_info(self):
+        command = ("update",)
+        self._send(json.dumps(command).encode('utf-8'))
         response = self._read().decode()
         if not response.startswith('OK'):
             print('Incorrect response!')
         print(response)
-        # return response
-
-    def update_info(self):
-        pass
 
     # def run(self):
     #     while True:

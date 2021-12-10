@@ -16,6 +16,9 @@ import os.path
 
 
 class Ui_MainWindow(object):
+    def __init__(self):
+        self.fio = None
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(754, 593)
@@ -135,11 +138,9 @@ class Ui_MainWindow(object):
     def get_fio(self):
         self.fio = self.fioEdit.text().lower()
         self.client.add_user(self.fio, self.GeneratePubKey())
-        # print(self.fio)
-
 
     def update_info(self):
-        pass
+        self.client.update_info()
 
 
     def create_des(self):
@@ -152,9 +153,9 @@ class Ui_MainWindow(object):
         print(self.public_key)
 
 
-
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
