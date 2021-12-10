@@ -9,14 +9,17 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from NetworkСonnection.server import Server
+from PyQt5.QtCore import QThread
+from PyQt5.QtWidgets import QListWidgetItem
+import threading
+from NetworkConnection.server import Server
 import os
-from NetworkСonnection.db_api import create_db
-
+from NetworkConnection.db_api import create_db, get_users, find_by_fio
+from base64 import b64decode
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
+        MainWindow.setObjectName("Server_epta")
         MainWindow.resize(802, 607)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -86,6 +89,12 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.label_3.setFont(font)
         self.label_3.setObjectName("label_3")
+        self.updateButton = QtWidgets.QPushButton(self.centralwidget)
+        self.updateButton.setGeometry(QtCore.QRect(120, 500, 151, 20))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.updateButton.setFont(font)
+        self.updateButton.setObjectName("updateButton")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 802, 18))
@@ -94,18 +103,33 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.addButton.clicked.connect(self.add_elector);
-        self.allWidget
+        self.addButton.clicked.connect(self.add_voters)
+        self.updateButton.clicked.connect(self.update_voters)
+        self.finishButton.clicked.connect(self.finish)
         self.db_name = "voting.db"
-        self.server = Server(db_name="voting.db")
-
+        
+        # Create a QThread object
+        self.thread = QThread()
+        # Create a server object
+        self.server = Server(db_name=self.db_name)
+        # Move server to the thread
+        self.server.moveToThread(self.thread)
+        # Connect signals and slots
+        self.thread.started.connect(self.server.run)
+        self.server.finished.connect(self.thread.quit)
+        self.server.finished.connect(self.server.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        # Step 6: Start the thread
+        self.thread.start()
+        self.thread.finished.connect(self.finish)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Server"))
         self.startButton.setText(_translate("MainWindow", "Начать голосование"))
         self.label.setText(_translate("MainWindow", "Вопрос голосования"))
         self.finishButton.setText(_translate("MainWindow", "Подсчитать голоса"))
@@ -115,10 +139,26 @@ class Ui_MainWindow(object):
         self.noLabel.setText(_translate("MainWindow", "0.0%"))
         self.addButton.setText(_translate("MainWindow", "Добавить избирателя"))
         self.label_3.setText(_translate("MainWindow", "Все участники системы"))
+        self.updateButton.setText(_translate("MainWindow", "Обновить"))
 
-    def add_elector(self):
+    def add_voters(self):
         fio = self.fioEdit.text()
-        var = self.electorsWidget
+        users = find_by_fio(db_name=self.db_name, table="voters", fio=fio)
+        user = users[0]
+        add_user(db_name=self.db_name, table="current_voters", fio=user["fio"], public_key=user["public_key"])
+        users = get_users(self.db_name, table="current_voters")
+        for user in users:
+            self.electorsWidget.addItem(QListWidgetItem(user["fio"].upper()))
+
+    def update_voters(self):
+        self.allWidget.clear()
+        users = get_users(self.db_name, table="voters")
+        for user in users:
+            self.allWidget.addItem(QListWidgetItem(user["fio"].upper()))
+
+    def finish(self):
+        self.server.is_active = False
+
 
 if __name__ == "__main__":
     import sys
@@ -127,6 +167,6 @@ if __name__ == "__main__":
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
-    app.exec_()
-    ui.server.run()
-    sys.exit()
+    err = app.exec_()
+    # ui.server.is_active = False
+    sys.exit(err)

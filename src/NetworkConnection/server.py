@@ -11,7 +11,6 @@ class ServerError(Exception):
     pass
 
 
-
 class Server(QObject):
     finished = pyqtSignal()
 
@@ -49,9 +48,11 @@ class Server(QObject):
                         print(data["public_key"])
                         public_key = data["public_key"].encode()
                         add_user(self.db_name, table="voters", fio=data["fio"], public_key=public_key)
-                        # add_user(self.db_name, data["fio"], data["public_key"])
                     case "UPDATE":
                         conn.sendall('OK'.encode('utf-8'))
+                    case "VOTE":
+                        data = command[1]
+                        print(data)
                     case "BYE":
                         break
 
@@ -63,6 +64,5 @@ class Server(QObject):
                                   args=(conn, addr))
             th.start()
             if not self.is_active:
-
                 break
         self.finished.emit()
