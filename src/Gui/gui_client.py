@@ -13,6 +13,7 @@ from NetworkConnection.client import Client
 from Crypto.PublicKey import RSA
 import os
 import os.path
+from base64 import b64encode
 
 
 class Ui_MainWindow(object):
@@ -112,7 +113,7 @@ class Ui_MainWindow(object):
         self.fio = ""
         self.client = Client()
         self.passphrase = "NiktoNeUgadaet"
-        self.public_key = ""
+        self.public_key = b""
 
         self.approveButton.clicked.connect(self.get_fio)
         self.updateButton.clicked.connect(self.update_info)
@@ -140,14 +141,13 @@ class Ui_MainWindow(object):
 
 
     def create_des(self):
-        if os.path.exists("./private_key"):
-            return
         key = RSA.generate(1024, os.urandom)
-        with open("./private_key", "wb") as f:
-            f.write(key.export_key('PEM', passphrase=self.passphrase))
-        self.public_key = key.public_key().export_key('PEM')
+        if not os.path.exists("./private_key"):
+            with open("./private_key", "wb") as f:
+                f.write(key.export_key('PEM', passphrase=self.passphrase))
+        self.public_key = key.public_key().export_key("PEM")
         print(self.public_key)
-        self.client.add_user(self.fio, self.public_key)
+        self.client.add_user(self.fio, self.public_key.decode())
 
 
 if __name__ == "__main__":

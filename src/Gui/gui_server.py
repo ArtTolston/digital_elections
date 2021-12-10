@@ -14,7 +14,8 @@ from PyQt5.QtWidgets import QListWidgetItem
 import threading
 from NetworkConnection.server import Server
 import os
-from NetworkConnection.db_api import create_db, get_users
+from NetworkConnection.db_api import create_db, get_users, find_by_fio
+from base64 import b64decode
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -109,7 +110,6 @@ class Ui_MainWindow(object):
         self.addButton.clicked.connect(self.add_voters)
         self.updateButton.clicked.connect(self.update_voters)
         self.finishButton.clicked.connect(self.finish)
-        self.allWidget
         self.db_name = "voting.db"
         
         # Create a QThread object
@@ -143,13 +143,18 @@ class Ui_MainWindow(object):
 
     def add_voters(self):
         fio = self.fioEdit.text()
-        var = self.electorsWidget
+        users = find_by_fio(db_name=self.db_name, table="voters", fio=fio)
+        user = users[0]
+        add_user(db_name=self.db_name, table="current_voters", fio=user["fio"], public_key=user["public_key"])
+        users = get_users(self.db_name, table="current_voters")
+        for user in users:
+            self.electorsWidget.addItem(QListWidgetItem(user["fio"].upper()))
 
     def update_voters(self):
         self.allWidget.clear()
-        users = get_users(self.db_name)
+        users = get_users(self.db_name, table="voters")
         for user in users:
-            self.allWidget.addItem(QListWidgetItem(user["fio"]))
+            self.allWidget.addItem(QListWidgetItem(user["fio"].upper()))
 
     def finish(self):
         self.server.is_active = False
