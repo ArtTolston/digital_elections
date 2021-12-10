@@ -39,10 +39,10 @@ class Server(QObject):
                 msg = conn.recv(self.buffer_size).decode()
                 if not msg:
                     break
-                # PAYLOAD CODE HERE ###########################################
                 data = json.loads(msg)
                 conn.sendall(('OK' + data["fio"]).encode('utf-8'))
-                ###############################################################
+                if "fio" in data and "public_key" in data:
+                    add_user(self.db_name, data["fio"], data["public_key"])
                 break
 
     def run(self):

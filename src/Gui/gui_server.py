@@ -112,7 +112,7 @@ class Ui_MainWindow(object):
         self.finishButton.clicked.connect(self.finish)
         self.allWidget
         self.db_name = "voting.db"
-
+        
         # Create a QThread object
         self.thread = QThread()
         # Create a server object
@@ -127,7 +127,6 @@ class Ui_MainWindow(object):
         # Step 6: Start the thread
         self.thread.start()
         self.thread.finished.connect(self.finish)
-        
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -168,15 +167,3 @@ if __name__ == "__main__":
     err = app.exec_()
     # ui.server.is_active = False
     sys.exit(err)
-    # ui.server.state = app.exec_()
-    # print(ui.server.state)
-    # sys.exit(ui.server.run())
-
-    # th2 = threading.Thread(target=app.exec_())
-    # th2.start()
-    # th1 = threading.Thread(target=ui.server.run())
-    # th1.start()
-    #
-    #
-    # # (ui.server.run()
-    # sys.exit(0)
