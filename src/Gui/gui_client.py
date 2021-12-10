@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from NetworkСonnection.client import Client
+from NetworkConnection.client import Client
 from Crypto.PublicKey import RSA
 import os
 import os.path

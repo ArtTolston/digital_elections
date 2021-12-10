@@ -10,7 +10,7 @@ class ServerError(Exception):
 
 
 class Server:
-    def __init__(self, db_name, addr='', port=62000, buffer_size=1024, log=False):
+    def __init__(self, db_name, addr='0.0.0.0', port=62000, buffer_size=1024, log=False):
         self.buffer_size = buffer_size
         self.socket_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -36,6 +36,7 @@ class Server:
                         break
                     data = json.loads(msg)
                     conn.sendall(('OK').encode("utf8"))
-                    if "fio" in data and "public_key" in data:
-                        add_user(self.db_name, data["fio"], data["public_key"])
+                    #if "fio" in data and "public_key" in data:
+                    #    print("add_user")
+                    #    add_user(self.db_name, data["fio"], data["public_key"])
                 break

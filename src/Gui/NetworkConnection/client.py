@@ -34,6 +34,7 @@ class Client:
     def send_msg(self, fio, pub_key):
         data = {"fio": fio, "public_key": pub_key}
         self._send(json.dumps(data).encode('utf-8'))
+        print("send_msg")
         response = self._read().decode()
         if not response.startswith('OK'):
             print('Incorrect response!')

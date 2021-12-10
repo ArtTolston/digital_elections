@@ -9,9 +9,9 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from NetworkСonnection.server import Server
+from NetworkConnection.server import Server
 import os
-from NetworkСonnection.db_api import create_db, get_users
+from NetworkConnection.db_api import create_db, get_users
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -103,7 +103,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.addButton.clicked.connect(self.add_votes);
+        self.addButton.clicked.connect(self.add_voters);
         self.updateButton.clicked.connect(self.update_voters)
         self.finishButton.clicked.connect(self.finish)
         self.allWidget
@@ -130,7 +130,7 @@ class Ui_MainWindow(object):
 
     def update_voters(self):
         self.allWidget.clear()
-        users = get_users()
+        users = get_users(self.db_name)
         for user in users:
             self.allWidget.addItem(QListWidgetItem(user["fio"]))
 
@@ -145,6 +145,5 @@ if __name__ == "__main__":
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
-    app.exec_()
     ui.server.run()
-    sys.exit()
+    sys.exit(app.exec_())
