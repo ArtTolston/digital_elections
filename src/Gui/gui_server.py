@@ -18,7 +18,7 @@ from NetworkConnection.db_api import create_db, get_users
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
+        MainWindow.setObjectName("Server_epta")
         MainWindow.resize(802, 607)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
