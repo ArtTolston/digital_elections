@@ -51,8 +51,11 @@ class Server(QObject):
                     case "add":
                         data = command[1]
                         print(data)
-                        add_user(self.db_name, data["fio"], data["public_key"])
+                        print(data["public_key"])
+                        public_key = data["public_key"].encode()
+                        add_user(self.db_name, table="voters", fio=data["fio"], public_key=public_key)
                     case "update":
+
                         conn.sendall('OK'.encode('utf-8'))
                     case "":
                         break

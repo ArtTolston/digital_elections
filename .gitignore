@@ -1,1 +1,4 @@
 *.ui
+__pycache__
+private_key
+*.db
