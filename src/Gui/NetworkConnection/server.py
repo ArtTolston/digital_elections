@@ -43,21 +43,16 @@ class Server(QObject):
                 if not msg:
                     break
                 command = json.loads(msg)
-                if self.t - time.time() > 15:
-                    print('ЖОПА ВЗЛОМАНА')
-                    exit()
                 match command[0]:
-
-                    case "add":
+                    case "ADD":
                         data = command[1]
-                        print(data)
                         print(data["public_key"])
                         public_key = data["public_key"].encode()
                         add_user(self.db_name, table="voters", fio=data["fio"], public_key=public_key)
-                    case "update":
-
+                        # add_user(self.db_name, data["fio"], data["public_key"])
+                    case "UPDATE":
                         conn.sendall('OK'.encode('utf-8'))
-                    case "":
+                    case "BYE":
                         break
 
     def run(self):

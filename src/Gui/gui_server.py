@@ -115,7 +115,7 @@ class Ui_MainWindow(object):
         # Create a QThread object
         self.thread = QThread()
         # Create a server object
-        self.server = Server(db_name="voting.db")
+        self.server = Server(db_name=self.db_name)
         # Move server to the thread
         self.server.moveToThread(self.thread)
         # Connect signals and slots
@@ -129,7 +129,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Server"))
         self.startButton.setText(_translate("MainWindow", "Начать голосование"))
         self.label.setText(_translate("MainWindow", "Вопрос голосования"))
         self.finishButton.setText(_translate("MainWindow", "Подсчитать голоса"))
