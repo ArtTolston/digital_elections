@@ -33,12 +33,12 @@ class Client:
         return data
 
     def add_user(self, fio, pub_key):
-        command = ("add", {"fio": fio, "public_key": pub_key})
+        command = ("ADD", {"fio": fio, "public_key": pub_key})
         print(json.dumps(command))
         self._send(json.dumps(command).encode('utf-8'))
 
     def update_info(self):
-        command = ("update",)
+        command = ("UPDATE",)
         self._send(json.dumps(command).encode('utf-8'))
         response = self._read().decode()
         if not response.startswith('OK'):
