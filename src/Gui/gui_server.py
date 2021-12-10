@@ -9,9 +9,13 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from NetworkСonnection.server import Server
+from PyQt5.QtCore import QThread
+from PyQt5.QtWidgets import QListWidgetItem
+
+import threading
+from NetworkConnection.server import Server
 import os
-from NetworkСonnection.db_api import create_db, get_users
+from NetworkConnection.db_api import create_db, get_users
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -103,12 +107,26 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.addButton.clicked.connect(self.add_votes);
+        self.addButton.clicked.connect(self.add_voters)
         self.updateButton.clicked.connect(self.update_voters)
         self.finishButton.clicked.connect(self.finish)
         self.allWidget
         self.db_name = "voting.db"
+        
+        # Create a QThread object
+        self.thread = QThread()
+        # Create a server object
         self.server = Server(db_name="voting.db")
+        # Move server to the thread
+        self.server.moveToThread(self.thread)
+        # Connect signals and slots
+        self.thread.started.connect(self.server.run)
+        self.server.finished.connect(self.thread.quit)
+        self.server.finished.connect(self.server.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        # Step 6: Start the thread
+        self.thread.start()
+        self.thread.finished.connect(self.finish)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -129,13 +147,14 @@ class Ui_MainWindow(object):
         var = self.electorsWidget
 
     def update_voters(self):
-        self.allWidget.clear()
-        users = get_users()
-        for user in users:
-            self.allWidget.addItem(QListWidgetItem(user["fio"]))
+        pass
+        # self.allWidget.clear()
+        # users = get_users()
+        # for user in users:
+        #     self.allWidget.addItem(QListWidgetItem(user["fio"]))
 
     def finish(self):
-        pass
+        self.server.is_active = False
 
 
 if __name__ == "__main__":
@@ -145,6 +164,6 @@ if __name__ == "__main__":
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
-    app.exec_()
-    ui.server.run()
-    sys.exit()
+    err = app.exec_()
+    # ui.server.is_active = False
+    sys.exit(err)
