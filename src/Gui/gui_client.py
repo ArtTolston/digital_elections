@@ -120,7 +120,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Client_blyat"))
         self.label.setText(_translate("MainWindow", "Твое ФИО"))
         self.approveButton.setText(_translate("MainWindow", "Подтвердить"))
         self.label_2.setText(_translate("MainWindow", "Участники голосования"))
@@ -132,12 +132,8 @@ class Ui_MainWindow(object):
         self.updateButton.setText(_translate("MainWindow", "Обновить информацию"))
         self.resultLabel.setText(_translate("MainWindow", "Победил ответ...."))
 
-    def GeneratePubKey(self):
-        return "ASD"
-
     def get_fio(self):
         self.fio = self.fioEdit.text().lower()
-        self.client.add_user(self.fio, self.GeneratePubKey())
 
     def update_info(self):
         self.client.update_info()
@@ -151,6 +147,7 @@ class Ui_MainWindow(object):
             f.write(key.export_key('PEM', passphrase=self.passphrase))
         self.public_key = key.public_key().export_key('PEM')
         print(self.public_key)
+        self.client.add_user(self.fio, self.public_key)
 
 
 if __name__ == "__main__":
