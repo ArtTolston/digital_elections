@@ -137,7 +137,15 @@ class Ui_MainWindow(object):
         self.fio = self.fioEdit.text().lower()
 
     def update_info(self):
-        self.client.update_info()
+        response = self.client.update_info()
+        if response["voters"]:
+            self.listWidget.clear()
+            for voter in response["voters"]:
+                self.listWidget.addItem(voter.upper())
+        if response["question"]:
+            self.questionLabel.setText(response["question"])
+        else:
+            self.questionLabel.setText("Увы, сегодня без выборов...")
 
 
     def create_des(self):

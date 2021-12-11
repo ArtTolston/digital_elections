@@ -2,7 +2,7 @@ import json
 import socket
 import threading
 from PyQt5.QtCore import QObject, pyqtSignal
-from .db_api import add_user, create_db
+from .db_api import add_user, create_db, get_valid_election, get_users
 import os
 import time
 
@@ -24,8 +24,6 @@ class Server(QObject):
         self.state = True
         self.db_name = db_name
         self.t = time.time()
-        if not os.path.exists(self.db_name):
-            create_db(self.db_name)
         self.state = -1
         try:
             self.socket_server.bind((addr, port))
@@ -55,8 +53,12 @@ class Server(QObject):
                         public_key = data["public_key"].encode()
                         add_user(self.db_name, table="voters", fio=data["fio"], public_key=public_key)
                     case "update":
-
-                        conn.sendall('OK'.encode('utf-8'))
+                        voters = get_users(self.db_name, "current_voters")
+                        voters = [voter["fio"] for voter in voters]
+                        question = get_valid_election(self.db_name)
+                        print(question)
+                        message = json.dumps({"voters": voters, "question": question})
+                        conn.sendall(message.encode('utf-8'))
                     case "":
                         break
 

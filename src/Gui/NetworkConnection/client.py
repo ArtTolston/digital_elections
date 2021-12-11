@@ -41,9 +41,8 @@ class Client:
         command = ("update",)
         self._send(json.dumps(command).encode('utf-8'))
         response = self._read().decode()
-        if not response.startswith('OK'):
-            print('Incorrect response!')
         print(response)
+        return json.loads(response)
 
     # def run(self):
     #     while True:

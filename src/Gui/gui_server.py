@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QListWidgetItem
 import threading
 from NetworkConnection.server import Server
 import os
-from NetworkConnection.db_api import create_db, get_users, find_by_fio
+from NetworkConnection.db_api import create_db, get_users, find_by_fio, add_user, get_number_of_voters, add_election
 from base64 import b64decode
 
 class Ui_MainWindow(object):
@@ -110,7 +110,17 @@ class Ui_MainWindow(object):
         self.addButton.clicked.connect(self.add_voters)
         self.updateButton.clicked.connect(self.update_voters)
         self.finishButton.clicked.connect(self.finish)
+        self.startButton.clicked.connect(self.start_elections)
         self.db_name = "voting.db"
+        if not os.path.exists(self.db_name):
+            create_db(self.db_name)
+
+        users = get_users(self.db_name, "voters")
+        for user in users:
+            self.allWidget.addItem(QListWidgetItem(user["fio"].upper()))
+        voters = get_users(self.db_name, "current_voters")
+        for voter in voters:
+            self.electorsWidget.addItem(QListWidgetItem(voter["fio"].upper()))
         
         # Create a QThread object
         self.thread = QThread()
@@ -142,7 +152,8 @@ class Ui_MainWindow(object):
         self.updateButton.setText(_translate("MainWindow", "Обновить"))
 
     def add_voters(self):
-        fio = self.fioEdit.text()
+        self.electorsWidget.clear()
+        fio = self.fioEdit.text().lower()
         users = find_by_fio(db_name=self.db_name, table="voters", fio=fio)
         user = users[0]
         add_user(db_name=self.db_name, table="current_voters", fio=user["fio"], public_key=user["public_key"])
@@ -155,6 +166,11 @@ class Ui_MainWindow(object):
         users = get_users(self.db_name, table="voters")
         for user in users:
             self.allWidget.addItem(QListWidgetItem(user["fio"].upper()))
+
+    def start_elections(self):
+        question = self.lineEdit.text()
+        amount_of_voters = get_number_of_voters(self.db_name, "current_voters")
+        add_election(self.db_name, question, amount_of_voters)
 
     def finish(self):
         self.server.is_active = False
