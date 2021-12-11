@@ -11,11 +11,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import QListWidgetItem
-import threading
 from NetworkConnection.server import Server
-import os
-from NetworkConnection.db_api import create_db, get_users, find_by_fio
-from base64 import b64decode
+from NetworkConnection.db_api import create_db, add_user, get_users, find_by_fio
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -168,5 +165,4 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     err = app.exec_()
-    # ui.server.is_active = False
     sys.exit(err)
