@@ -33,21 +33,21 @@ class Client:
         return data
 
     def add_user(self, fio, pub_key):
-        command = ("add", {"fio": fio, "public_key": pub_key})
+        command = ("ADD", {"fio": fio, "public_key": pub_key})
         print(json.dumps(command))
         self._send(json.dumps(command).encode('utf-8'))
 
     def update_info(self):
-        command = ("update",)
+        command = ("UPDATE",)
         self._send(json.dumps(command).encode('utf-8'))
         response = self._read().decode()
         print(response)
         return json.loads(response)
 
-    # def run(self):
-    #     while True:
-    #         match self.action:
-    #             case "add_user":
-    #                 self.add_user(fio, pub_key)
-    #             case _:
-    #                 raise ClientError("Incorrect request from client")
+    def vote(self, var):
+        command = ("VOTE", var)
+        self._send(json.dumps(command).encode('utf-8'))
+
+    def bye(self):
+        command = ("BYE",)
+        self._send(json.dumps(command).encode('utf-8'))
