@@ -108,6 +108,7 @@ class Ui_MainWindow(object):
         self.addButton.clicked.connect(self.add_voters)
         self.updateButton.clicked.connect(self.update_voters)
         self.finishButton.clicked.connect(self.finish)
+        self.startButton.clicked.connect(self.start_elections)
         self.db_name = "voting.db"
         if not os.path.exists(self.db_name):
             create_db(self.db_name)

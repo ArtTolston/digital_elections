@@ -80,6 +80,7 @@ def add_election(db_name, question, amount):
     with sqlite3.connect(db_name) as conn:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
+        print("add_election")
         cur.execute("INSERT INTO election (question, amount, valid) VALUES (?, ?, ?)", (question, amount, "yes"))
         cur.close()
 
@@ -87,11 +88,8 @@ def get_valid_election(db_name):
     with sqlite3.connect(db_name) as conn:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        cur.execute("SELECT question FROM election WHERE valid = 'yes'")
+        cur.execute("SELECT question FROM election WHERE valid = 'yes' LIMIT 1")
         resp = cur.fetchone()
-        print(resp[0])
+        print(resp["question"])
         cur.close()
-        if "question" in resp[0]:
-            return resp["question"]
-        else:
-            return resp[0]
+        return resp["question"]
