@@ -4,7 +4,6 @@ import threading
 from PyQt5.QtCore import QObject, pyqtSignal
 from .db_api import add_user, create_db
 import os
-import time
 
 
 class ServerError(Exception):
@@ -22,7 +21,6 @@ class Server(QObject):
         self.socket_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.state = True
         self.db_name = db_name
-        self.t = time.time()
         if not os.path.exists(self.db_name):
             create_db(self.db_name)
         self.state = -1
