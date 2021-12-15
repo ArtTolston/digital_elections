@@ -44,8 +44,9 @@ class Client:
         print(response)
         return json.loads(response)
 
-    def vote(self, var):
-        command = ("VOTE", var)
+    def vote(self, encrypted_vote):
+        print(encrypted_vote)
+        command = ("VOTE", encrypted_vote)
         self._send(json.dumps(command).encode('utf-8'))
 
     def bye(self):

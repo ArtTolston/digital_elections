@@ -3,6 +3,7 @@ import socket
 import threading
 from PyQt5.QtCore import QObject, pyqtSignal
 from .db_api import add_user, create_db, get_valid_election, get_users
+from Crypto.PublicKey import RSA
 import os
 
 
@@ -49,7 +50,11 @@ class Server(QObject):
                         voters = [voter["fio"] for voter in voters]
                         question = get_valid_election(self.db_name)
                         print(question)
-                        message = json.dumps({"voters": voters, "question": question})
+                        pk = ""
+                        with open("./NetworkConnection/server_public_key", "rb") as f:
+                            pk = RSA.import_key(f.read()).export_key("PEM")
+                        print(pk)
+                        message = json.dumps({"voters": voters, "question": question, "public_key": pk.decode()})
                         conn.sendall(message.encode('utf-8'))
                     case "VOTE":
                         data = command[1]

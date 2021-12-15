@@ -13,6 +13,7 @@ from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import QListWidgetItem
 from NetworkConnection.server import Server
 from NetworkConnection.db_api import create_db, get_users, find_by_fio, add_user, get_number_of_voters, add_election
+from Crypto.PublicKey import RSA
 import os
 
 class Ui_MainWindow(object):
@@ -110,6 +111,7 @@ class Ui_MainWindow(object):
         self.finishButton.clicked.connect(self.finish)
         self.startButton.clicked.connect(self.start_elections)
         self.db_name = "voting.db"
+        self.passphrase = "no_one_knows"
         if not os.path.exists(self.db_name):
             create_db(self.db_name)
 
@@ -134,6 +136,7 @@ class Ui_MainWindow(object):
         # Step 6: Start the thread
         self.thread.start()
         self.thread.finished.connect(self.finish)
+        self.create_des()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -148,6 +151,15 @@ class Ui_MainWindow(object):
         self.addButton.setText(_translate("MainWindow", "Добавить избирателя"))
         self.label_3.setText(_translate("MainWindow", "Все участники системы"))
         self.updateButton.setText(_translate("MainWindow", "Обновить"))
+
+    def create_des(self):
+        key = RSA.generate(1024, os.urandom)
+        if not os.path.exists("./server_private_key") or not os.path.exists("./NetworkConnection/server_public_key"):
+            print("create public and private keys")
+            with open("./server_private_key", "wb") as f:
+                f.write(key.export_key('PEM', passphrase=self.passphrase))
+            with open("./NetworkConnection/server_public_key", "wb") as f:
+                f.write(key.public_key().export_key('PEM'))
 
     def add_voters(self):
         self.electorsWidget.clear()

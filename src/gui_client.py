@@ -11,6 +11,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from NetworkConnection.client import Client
 from Crypto.PublicKey import RSA
+from Crypto.Hash import SHA256
+from Crypto.Signature import pkcs1_15
+from Crypto.Cipher import AES, PKCS1_OAEP
+from Crypto.Random import get_random_bytes
+from Crypto.Util.Padding import pad
 import os
 import os.path
 from base64 import b64encode
@@ -139,6 +144,9 @@ class Ui_MainWindow(object):
 
     def update_info(self):
         response = self.client.update_info()
+        if response["public_key"]:
+            with open("server_public_key_on_client", "wb") as f:
+                f.write(response["public_key"].encode())
         if response["voters"]:
             self.listWidget.clear()
             for voter in response["voters"]:
@@ -161,11 +169,36 @@ class Ui_MainWindow(object):
         if self.noBox.isChecked() and self.yesBox.isChecked():
             self.client.bye()
         elif self.noBox.isChecked():
-            self.client.vote(False)
+            vote = self.cipher(False)
+            self.client.vote(vote)
         elif self.yesBox.isChecked():
-            self.client.vote(True)
+            vote = self.cipher(True)
+            self.client.vote(vote)
         else:
             self.client.bye()
+
+    def cipher(self, vote):
+        private_key = 0
+        server_public_key = 0
+        with open("./private_key", "rb") as f:
+            private_key = RSA.import_key(f.read(), passphrase=self.passphrase)
+        with open("./server_public_key_on_client", "rb") as f:
+            server_public_key = RSA.import_key(f.read())
+        hash_obj = SHA256.new(str(vote).encode())
+        sign = pkcs1_15.new(private_key).sign(hash_obj)
+        print(f'sign {sign}')
+        session_key = get_random_bytes(16)
+        aes = AES.new(session_key, AES.MODE_CBC)
+        encrypted_bytes = aes.encrypt(pad(str(vote).encode(), AES.block_size))
+        rsa_cipher = PKCS1_OAEP.new(server_public_key)
+        encrypted_session_key = rsa_cipher.encrypt(session_key)
+        encrypted_vote = {}
+        encrypted_vote["sign"] = b64encode(sign).decode()
+        encrypted_vote["encrypted_bytes"] = b64encode(encrypted_bytes).decode()
+        encrypted_vote["encrypted_session_key"] = b64encode(encrypted_session_key).decode()
+        return encrypted_vote
+
+
 
 
 if __name__ == "__main__":
