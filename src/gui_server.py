@@ -125,7 +125,7 @@ class Ui_MainWindow(object):
         # Create a QThread object
         self.thread = QThread()
         # Create a server object
-        self.server = Server(db_name=self.db_name)
+        self.server = Server(db_name=self.db_name, passphrase=self.passphrase)
         # Move server to the thread
         self.server.moveToThread(self.thread)
         # Connect signals and slots

@@ -115,7 +115,7 @@ class Ui_MainWindow(object):
         #           user code
         ####################################
 
-        self.fio = ""
+        self.fio = "Artem"
         self.client = Client()
         self.passphrase = "NiktoNeUgadaet"
         self.public_key = b""
@@ -169,11 +169,15 @@ class Ui_MainWindow(object):
         if self.noBox.isChecked() and self.yesBox.isChecked():
             self.client.bye()
         elif self.noBox.isChecked():
-            vote = self.cipher(False)
-            self.client.vote(vote)
+            encrypted_vote = self.cipher(False)
+            encrypted_vote["fio"] = self.fio
+            encrypted_vote["question"] = self.questionLabel.text()
+            self.client.vote(encrypted_vote)
         elif self.yesBox.isChecked():
-            vote = self.cipher(True)
-            self.client.vote(vote)
+            encrypted_vote = self.cipher(True)
+            encrypted_vote["fio"] = self.fio
+            encrypted_vote["question"] = self.questionLabel.text()
+            self.client.vote(encrypted_vote)
         else:
             self.client.bye()
 
@@ -192,10 +196,14 @@ class Ui_MainWindow(object):
         encrypted_bytes = aes.encrypt(pad(str(vote).encode(), AES.block_size))
         rsa_cipher = PKCS1_OAEP.new(server_public_key)
         encrypted_session_key = rsa_cipher.encrypt(session_key)
+        print(f'iv: {aes.iv}')
+        print(f'encrypted_bytes: {encrypted_bytes}')
+        print(f'session_key: {session_key}')
         encrypted_vote = {}
         encrypted_vote["sign"] = b64encode(sign).decode()
         encrypted_vote["encrypted_bytes"] = b64encode(encrypted_bytes).decode()
         encrypted_vote["encrypted_session_key"] = b64encode(encrypted_session_key).decode()
+        encrypted_vote["iv"] = b64encode(aes.iv).decode()
         return encrypted_vote
 
 
