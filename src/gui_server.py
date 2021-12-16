@@ -12,7 +12,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import QListWidgetItem
 from NetworkConnection.server import Server
-from NetworkConnection.db_api import create_db, get_users, find_by_fio, add_user, get_number_of_voters, add_election
+from NetworkConnection.db_api import create_db, get_users,\
+find_by_fio, add_user, get_number_of_voters, add_election, count_voices
 from Crypto.PublicKey import RSA
 import os
 
@@ -183,8 +184,13 @@ class Ui_MainWindow(object):
         add_election(self.db_name, question, amount_of_voters)
 
 
-    def finish_elections():
-        pass
+    def finish_elections(self):
+        question = self.lineEdit.text()
+        true, false = count_voices(self.db_name, question)
+        self.yesLabel.clear()
+        self.noLabel.clear()
+        self.yesLabel.setText(f'{float(true) * 100}%')
+        self.noLabel.setText(f'{float(false) * 100}%')
 
 
     def finish(self):

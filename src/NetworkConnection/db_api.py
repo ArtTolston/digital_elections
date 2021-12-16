@@ -99,7 +99,38 @@ def add_user_voice(db_name, table, fio, question, voice):
     with sqlite3.connect(db_name) as conn:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
+        print(fio + "   " + question + "   " + voice)
         query = "INSERT INTO " + table + " (fio, question, voice) VALUES (?, ?, ?)"
         cur.execute(query, (fio, question, voice))
         cur.close()
         print("succesfully add user voice")
+
+
+def count_voices(db_name, question):
+    with sqlite3.connect(db_name) as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("SELECT count(voice) as total FROM voices WHERE question = ?", (question,))
+        total = cur.fetchone()["total"]
+        
+        print(f'total {total}')
+        cur.execute("SELECT count(voice) as true FROM voices WHERE voice = 'true' AND question = ?", (question, ))
+        true = cur.fetchone()["true"]
+        print(f'true {true}')
+        
+        cur.execute("SELECT count(voice) as false FROM voices WHERE voice = 'false' AND question = ?", (question, ))
+        false = cur.fetchone()["false"]
+        print(f'false {false}')
+        cur.execute("UPDATE election SET amount = ?,\
+                    valid = 'false',\
+                    results_true = ?,\
+                    results_false = ?\
+                    WHERE question = ?", (total, true, false, question))
+        conn.commit()
+        cur.execute("SELECT (results_true / amount) as perc_true,\
+                    (results_false / amount) as perc_false FROM election WHERE question = ?", (question, ))
+        rows = cur.fetchall()
+        row = rows[0]
+        cur.close()
+        return true / total, false / total
+        

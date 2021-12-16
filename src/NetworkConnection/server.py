@@ -73,8 +73,10 @@ class Server(QObject):
                         print(users)
                         user = users[0]
                         user_public_key = RSA.import_key(user["public_key"])
+                        print(f'voice: {voice}, sign: {sign}')
+                        print(f'user_public_key: {user_public_key.export_key("PEM")}')
                         pkcs1_15.new(user_public_key).verify(SHA256.new(str(voice).encode()), sign)
-                        add_user_voice(db_name=self.db_name, table="voices", fio=fio, question=question, voice=voice)
+                        add_user_voice(db_name=self.db_name, table="voices", fio=fio, question=question, voice=voice.lower())
 
 
                     case "BYE":
