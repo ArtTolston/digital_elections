@@ -2,7 +2,7 @@ import json
 import socket
 import threading
 from PyQt5.QtCore import QObject, pyqtSignal
-from .db_api import add_user, create_db, get_valid_election, get_users
+from .db_api import add_user, create_db, get_valid_election, get_users, find_by_fio, add_user_voice
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 from Crypto.Signature import pkcs1_15
@@ -58,7 +58,7 @@ class Server(QObject):
                         question = get_valid_election(self.db_name)
                         print(question)
                         pk = ""
-                        with open("./NetworkConnection/server_public_key", "rb") as f:
+                        with open("./server_public_key", "rb") as f:
                             pk = RSA.import_key(f.read()).export_key("PEM")
                         print(pk)
                         message = json.dumps({"voters": voters, "question": question, "public_key": pk.decode()})
@@ -68,7 +68,14 @@ class Server(QObject):
                         print(data)
                         fio = data["fio"]
                         question = data["question"]
-                        voice = self.decipher(data)
+                        voice, sign = self.decipher(data)
+                        users = find_by_fio(self.db_name, "current_voters", fio)
+                        print(users)
+                        user = users[0]
+                        user_public_key = RSA.import_key(user["public_key"])
+                        pkcs1_15.new(user_public_key).verify(SHA256.new(str(voice).encode()), sign)
+                        add_user_voice(db_name=self.db_name, table="voices", fio=fio, question=question, voice=voice)
+
 
                     case "BYE":
                         break
@@ -87,9 +94,9 @@ class Server(QObject):
         aes = AES.new(session_key, AES.MODE_CBC, iv)
         print(f'iv: {aes.iv}')
         print(f'session_key: {session_key}')
-        decrypted_bytes = unpad(aes.decrypt(encrypted_bytes), AES.block_size)
-        print(decrypted_bytes)
-
+        decrypted_text = unpad(aes.decrypt(encrypted_bytes), AES.block_size).decode()
+        print(decrypted_text)
+        return decrypted_text, sign
 
     def run(self):
         self.is_active = True

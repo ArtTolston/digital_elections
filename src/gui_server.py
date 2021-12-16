@@ -108,7 +108,7 @@ class Ui_MainWindow(object):
 
         self.addButton.clicked.connect(self.add_voters)
         self.updateButton.clicked.connect(self.update_voters)
-        self.finishButton.clicked.connect(self.finish)
+        self.finishButton.clicked.connect(self.finish_elections)
         self.startButton.clicked.connect(self.start_elections)
         self.db_name = "voting.db"
         self.passphrase = "no_one_knows"
@@ -154,11 +154,11 @@ class Ui_MainWindow(object):
 
     def create_des(self):
         key = RSA.generate(1024, os.urandom)
-        if not os.path.exists("./server_private_key") or not os.path.exists("./NetworkConnection/server_public_key"):
+        if not os.path.exists("./server_private_key") or not os.path.exists("./server_public_key"):
             print("create public and private keys")
             with open("./server_private_key", "wb") as f:
                 f.write(key.export_key('PEM', passphrase=self.passphrase))
-            with open("./NetworkConnection/server_public_key", "wb") as f:
+            with open("./server_public_key", "wb") as f:
                 f.write(key.public_key().export_key('PEM'))
 
     def add_voters(self):
@@ -181,6 +181,11 @@ class Ui_MainWindow(object):
         question = self.lineEdit.text()
         amount_of_voters = get_number_of_voters(self.db_name, "current_voters")
         add_election(self.db_name, question, amount_of_voters)
+
+
+    def finish_elections():
+        pass
+
 
     def finish(self):
         self.server.is_active = False

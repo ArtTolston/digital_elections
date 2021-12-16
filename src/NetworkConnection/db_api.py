@@ -93,3 +93,13 @@ def get_valid_election(db_name):
         print(resp["question"])
         cur.close()
         return resp["question"]
+
+
+def add_user_voice(db_name, table, fio, question, voice):
+    with sqlite3.connect(db_name) as conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        query = "INSERT INTO " + table + " (fio, question, voice) VALUES (?, ?, ?)"
+        cur.execute(query, (fio, question, voice))
+        cur.close()
+        print("succesfully add user voice")
