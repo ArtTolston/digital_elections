@@ -77,8 +77,6 @@ class Server(QObject):
                         print(f'user_public_key: {user_public_key.export_key("PEM")}')
                         pkcs1_15.new(user_public_key).verify(SHA256.new(str(voice).encode()), sign)
                         add_user_voice(db_name=self.db_name, table="voices", fio=fio, question=question, voice=voice.lower())
-
-
                     case "BYE":
                         break
 
