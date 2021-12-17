@@ -63,7 +63,8 @@ class SHA256:
 
         self.update(m)
 
-    def new(self, data=None):
+    @staticmethod
+    def new(data=None):
         return SHA256(data)
 
     def _compress(self, c):

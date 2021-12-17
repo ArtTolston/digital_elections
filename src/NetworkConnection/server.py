@@ -4,7 +4,7 @@ import threading
 from PyQt5.QtCore import QObject, pyqtSignal
 from .db_api import add_user, create_db, get_valid_election, get_users, find_by_fio, add_user_voice
 from Crypto.PublicKey import RSA
-from Crypto.Hash import SHA256
+from ../SHA256 import SHA256
 from Crypto.Signature import pkcs1_15
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Random import get_random_bytes
