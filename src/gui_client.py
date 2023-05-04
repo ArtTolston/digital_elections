@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from NetworkConnection.client import Client
 from Crypto.PublicKey import RSA
 import importlib
-SHA256 = importlib.import_module('SHA256')
+from Crypto.Hash import SHA256
 from Crypto.Signature import pkcs1_15
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Random import get_random_bytes

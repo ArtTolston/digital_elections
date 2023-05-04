@@ -18,4 +18,4 @@ print(hash1.hexdigest())
 
 pubkey = key.public_key()
 
-pkcs1_15.new(pubkey).verify(SHA256.new(b), signature)
+pkcs1_15.new(pubkey).verify(SHA256.new(a), signature)
