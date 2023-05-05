@@ -5,27 +5,9 @@ def create_db(db_name):
     with sqlite3.connect(db_name) as conn:
         cur = conn.cursor()
         print("DB is connected")
-        create_table_query = '''CREATE TABLE voters (
-                                fio TEXT PRIMARY KEY,
-                                public_key BLOB NOT NULL
-                                );'''
-        cur.execute(create_table_query)
-        cur.execute("CREATE TABLE current_voters (\
-                    fio TEXT PRIMARY KEY,\
-                    public_key BLOB NOT NULL);")
-        cur.execute("CREATE TABLE election (\
-                    question TEXT PRIMARY KEY,\
-                    amount INTEGER NOT NULL,\
-                    valid TEXT NOT NULL,\
-                    results_true INTEGER,\
-                    results_false INTEGER);")
-        cur.execute("CREATE TABLE voices (\
-                    fio TEXT NOT NULL,\
-                    question TEXT NOT NULL,\
-                    voice TEXT NOT NULL,\
-                    PRIMARY KEY (fio, question),\
-                    FOREIGN KEY (fio) REFERENCES voters(fio),\
-                    FOREIGN KEY (question) REFERENCES election(question));")
+        with open("schema.sql", "r") as f:
+            schema = f.read()
+            cur.executescript(schema)
         cur.close()
         conn.commit()
 
