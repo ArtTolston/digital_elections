@@ -1,12 +1,13 @@
 CREATE TABLE voters (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     fio TEXT NOT NULL,
-                    public_key BLOB NOT NULL);
+                    public_key BLOB NOT NULL,
+                    online INTEGER NOT NULL DEFAULT 0);
 
 CREATE TABLE elections (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     question TEXT NOT NULL,
-                    amount INTEGER NOT NULL,
+                    amount INTEGER NOT NULL DEFAULT 100,
                     results_true INTEGER);
 
 CREATE TABLE voters_elections_link (

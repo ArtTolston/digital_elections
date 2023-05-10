@@ -12,8 +12,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import QListWidgetItem
 from NetworkConnection.server import Server
-from NetworkConnection.db_api import create_db, get_users,\
-find_by_fio, add_user, get_number_of_voters, add_election, count_voices
+from NetworkConnection.db_api import create_db, get_users, \
+    find_by_fio, add_user, get_number_of_voters, add_election, count_votes, set_user_online, get_users_online, set_user_offline
 from Crypto.PublicKey import RSA
 import os
 
@@ -116,12 +116,11 @@ class Ui_MainWindow(object):
         if not os.path.exists(self.db_name):
             create_db(self.db_name)
 
+        set_user_offline(db_name=self.db_name, table="voters", fio="")
+
         users = get_users(self.db_name, "voters")
         for user in users:
             self.allWidget.addItem(QListWidgetItem(user["fio"].upper()))
-        voters = get_users(self.db_name, "current_voters")
-        for voter in voters:
-            self.electorsWidget.addItem(QListWidgetItem(voter["fio"].upper()))
         
         # Create a QThread object
         self.thread = QThread()
@@ -167,8 +166,8 @@ class Ui_MainWindow(object):
         fio = self.fioEdit.text().lower()
         users = find_by_fio(db_name=self.db_name, table="voters", fio=fio)
         user = users[0]
-        add_user(db_name=self.db_name, table="current_voters", fio=user["fio"], public_key=user["public_key"])
-        users = get_users(self.db_name, table="current_voters")
+        set_user_online(self.db_name, table="voters", fio=user["fio"])
+        users = get_users_online(self.db_name, table="voters")
         for user in users:
             self.electorsWidget.addItem(QListWidgetItem(user["fio"].upper()))
 
@@ -177,16 +176,21 @@ class Ui_MainWindow(object):
         users = get_users(self.db_name, table="voters")
         for user in users:
             self.allWidget.addItem(QListWidgetItem(user["fio"].upper()))
+        users = get_users_online(self.db_name, table="voters")
+        for user in users:
+            self.electorsWidget.clear()
+            self.electorsWidget.addItem(QListWidgetItem(user["fio"].upper()))
 
     def start_elections(self):
         question = self.lineEdit.text()
-        amount_of_voters = get_number_of_voters(self.db_name, "current_voters")
+        amount_of_voters = get_number_of_voters(self.db_name, "voters")
+
         add_election(self.db_name, question, amount_of_voters)
 
 
     def finish_elections(self):
         question = self.lineEdit.text()
-        true, false = count_voices(self.db_name, question)
+        true, false = count_votes(self.db_name, question)
         self.yesLabel.clear()
         self.noLabel.clear()
         self.yesLabel.setText(f'{float(true) * 100}%')

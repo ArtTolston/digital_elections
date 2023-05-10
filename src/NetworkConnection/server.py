@@ -2,7 +2,7 @@ import json
 import socket
 import threading
 from PyQt5.QtCore import QObject, pyqtSignal
-from .db_api import add_user, create_db, get_valid_election, get_users, find_by_fio, add_user_voice
+from .db_api import add_user, create_db, get_valid_election, get_users, find_by_fio, add_user_vote, get_users_online, set_user_online
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 import importlib
@@ -51,9 +51,14 @@ class Server(QObject):
                     data = command[1]
                     print(data["public_key"])
                     public_key = data["public_key"].encode()
-                    add_user(self.db_name, table="voters", fio=data["fio"], public_key=public_key)
+                    users = find_by_fio(self.db_name, "voters", fio=data["fio"])
+                    if users:
+                        set_user_online(db_name=self.db_name, table="voters", fio=data["fio"])
+                        print("user has already existed")
+                    else:
+                        add_user(self.db_name, table="voters", fio=data["fio"], public_key=public_key)
                 elif command[0] == "UPDATE":
-                    voters = get_users(self.db_name, "current_voters")
+                    voters = get_users_online(self.db_name, "voters")
                     voters = [voter["fio"] for voter in voters]
                     question = get_valid_election(self.db_name)
                     print(question)
@@ -69,14 +74,14 @@ class Server(QObject):
                     fio = data["fio"]
                     question = data["question"]
                     voice, sign = self.decipher(data)
-                    users = find_by_fio(self.db_name, "current_voters", fio)
+                    users = find_by_fio(self.db_name, "voters", fio)
                     print(users)
                     user = users[0]
                     user_public_key = RSA.import_key(user["public_key"])
                     print(f'voice: {voice}, sign: {sign}')
                     print(f'user_public_key: {user_public_key.export_key("PEM")}')
                     pkcs1_15.new(user_public_key).verify(SHA256.new(str(voice).encode()), sign)
-                    add_user_voice(db_name=self.db_name, table="voices", fio=fio, question=question, voice=voice.lower())
+                    add_user_vote(db_name=self.db_name, table="voters_elections_link", fio=fio, question=question, vote=voice.lower())
                 elif command[0] == "BYE":
                     break
                 else:

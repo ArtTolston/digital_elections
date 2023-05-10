@@ -31,7 +31,7 @@ class MyHandler(StreamRequestHandler):
             public_key = data["public_key"].encode()
             add_user(self.db_name, table="voters", fio=data["fio"], public_key=public_key)
         elif command[0] == Commands.UPDATE:
-            voters = get_users(self.db_name, "current_voters")
+            voters = get_users(self.db_name, "voters")
             voters = [voter["fio"] for voter in voters]
             question = get_valid_election(self.db_name)
             print(question)
