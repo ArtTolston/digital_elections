@@ -7,13 +7,14 @@ class ClientError(Exception):
 
 
 class Client:
-    def __init__(self, host='127.0.0.1', port=62000, timeout=None, buffer_size=1024):
+    def __init__(self, host='192.168.0.7', port=62000, timeout=None, buffer_size=1024):
         self.host = host
         # self.host = '192.168.1.4'
         self.port = port
         self.timeout = timeout
         self.buffer_size = buffer_size
         self.action = None
+        host = self.find_server()
         try:
             self.connection = socket.create_connection((self.host, self.port), timeout)
         except socket.error as err:
@@ -52,3 +53,30 @@ class Client:
     def bye(self):
         command = ("BYE",)
         self._send(json.dumps(command).encode('utf-8'))
+
+    def find_server(self):
+        print("find")
+        server_addr = ""
+        with socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM) as sock:
+            for i in range(9, 1, -1):
+                address = f"192.168.0.{i}"
+                # address = "127.0.0.1"
+                print(f"looking for address: {address}")
+                try:
+
+                    sock.connect((address, self.port))
+                    print(f"after connect")
+                    command = ("HELLO",)
+                    sock.sendall(json.dumps(command).encode())
+                    print(f"after sendall")
+                    response = sock.recv(self.buffer_size)
+                    print(f"after recv")
+                    code = json.loads(response.decode())
+                    if code != "HELLO":
+                        print(f"Address {address} is server but not responds correctly")
+                        continue
+                    print(f"Address {address} is server")
+                    server_addr = address
+                except socket.error:
+                    print(f"Address {address} is not active")
+        return server_addr

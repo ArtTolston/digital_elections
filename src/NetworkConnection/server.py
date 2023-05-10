@@ -21,7 +21,7 @@ class ServerError(Exception):
 class Server(QObject):
     finished = pyqtSignal()
 
-    def __init__(self, db_name, passphrase, addr='', port=62000, buffer_size=1024, log=False):
+    def __init__(self, db_name, passphrase, addr="192.168.0.7", port=62000, buffer_size=1024, log=True):
         super().__init__()
         self.is_active = False
         self.buffer_size = buffer_size
@@ -35,7 +35,7 @@ class Server(QObject):
             self.socket_server.bind((addr, port))
             self.socket_server.listen(10)
             if log:
-                print('[SERVER]: Socket server started and listening at port {}:'.format(port))
+                print('[SERVER]: Socket server started at {} and listening at port {}:'.format(addr, port))
         except socket.error as err:
             raise ServerError("Cannot create connection", err)
 
@@ -84,6 +84,8 @@ class Server(QObject):
                     add_user_vote(db_name=self.db_name, table="voters_elections_link", fio=fio, question=question, vote=voice.lower())
                 elif command[0] == "BYE":
                     break
+                elif command[0] == "HELLO":
+                    conn.sendall(json.dumps("HELLO").encode('utf-8'))
                 else:
                     print(f'command {command[0]} doesn\'t support')
 
