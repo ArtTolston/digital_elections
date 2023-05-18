@@ -142,6 +142,11 @@ class Ui_MainWindow(object):
 
     def get_fio(self):
         self.fio = self.fioEdit.text().lower()
+        response = self.client.check_user(self.fio)
+        q = QMessageBox()
+        q.setText(response)
+        q.exec()
+
 
     def update_info(self):
         response = self.client.update_info()
@@ -162,17 +167,25 @@ class Ui_MainWindow(object):
             print("enter fio!!!!")
             return
 
-        if not os.path.exists(f'./client_{self.fio}_private_key') or not os.path.exists(f'./client_{self.fio}_public_key'):
-            key = RSA.generate(1024, os.urandom)
-            with open(f'./client_{self.fio}_private_key', "wb") as f:
-                f.write(key.export_key('PEM', passphrase=self.passphrase + self.fio))
-            with open(f'./client_{self.fio}_public_key', "wb") as f:
-                f.write(key.public_key().export_key('PEM'))
+        response = self.client.check_user(self.fio)
+        if response == "user exists":
+            q = QMessageBox()
+            q.setText(response)
+            q.exec()
+        else:
 
-        with open(f'./client_{self.fio}_public_key', "rb") as f:
-            self.public_key = RSA.import_key(f.read())
-        print(self.public_key)
-        self.client.add_user(self.fio, self.public_key.export_key("PEM").decode())
+
+            if not os.path.exists(f'./client_{self.fio}_private_key') or not os.path.exists(f'./client_{self.fio}_public_key'):
+                key = RSA.generate(1024, os.urandom)
+                with open(f'./client_{self.fio}_private_key', "wb") as f:
+                    f.write(key.export_key('PEM', passphrase=self.passphrase + self.fio))
+                with open(f'./client_{self.fio}_public_key', "wb") as f:
+                    f.write(key.public_key().export_key('PEM'))
+
+            with open(f'./client_{self.fio}_public_key', "rb") as f:
+                self.public_key = RSA.import_key(f.read())
+            print(self.public_key)
+            self.client.add_user(self.fio, self.public_key.export_key("PEM").decode())
 
 
     def vote(self):

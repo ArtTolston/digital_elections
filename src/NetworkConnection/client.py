@@ -14,9 +14,11 @@ class Client:
         self.timeout = timeout
         self.buffer_size = buffer_size
         self.action = None
-        host = self.find_server()
+        self.host = self.find_server()
+        print("here")
         try:
             self.connection = socket.create_connection((self.host, self.port), timeout)
+            print("here2")
         except socket.error as err:
             raise ClientError("[Client]: Cannot create connection", err)
 
@@ -38,6 +40,14 @@ class Client:
         print(json.dumps(command))
         self._send(json.dumps(command).encode('utf-8'))
 
+    def check_user(self, fio):
+        command = ("CHECK", {"fio": fio})
+        print(json.dumps(command))
+        self._send(json.dumps(command).encode('utf-8'))
+        response = self._read().decode()
+        print(response)
+        return response
+
     def update_info(self):
         command = ("UPDATE",)
         self._send(json.dumps(command).encode('utf-8'))
@@ -58,8 +68,10 @@ class Client:
         print("find")
         server_addr = ""
         with socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM) as sock:
-            for i in range(9, 1, -1):
-                address = f"192.168.0.{i}"
+            start_address = 9
+            end_address = 1
+            for i in range(start_address, end_address, -1):
+                address = f"192.168.1.{i}"
                 # address = "127.0.0.1"
                 print(f"looking for address: {address}")
                 try:
@@ -77,6 +89,7 @@ class Client:
                         continue
                     print(f"Address {address} is server")
                     server_addr = address
+                    return server_addr
                 except socket.error:
                     print(f"Address {address} is not active")
-        return server_addr
+

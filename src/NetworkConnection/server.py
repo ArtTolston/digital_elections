@@ -21,7 +21,7 @@ class ServerError(Exception):
 class Server(QObject):
     finished = pyqtSignal()
 
-    def __init__(self, db_name, passphrase, addr="192.168.0.7", port=62000, buffer_size=1024, log=True):
+    def __init__(self, db_name, passphrase, addr="192.168.1.6", port=62000, buffer_size=1024, log=True):
         super().__init__()
         self.is_active = False
         self.buffer_size = buffer_size
@@ -57,6 +57,15 @@ class Server(QObject):
                         print("user has already existed")
                     else:
                         add_user(self.db_name, table="voters", fio=data["fio"], public_key=public_key)
+                elif command[0] == "CHECK":
+                    data = command[1]
+                    users = find_by_fio(self.db_name, "voters", fio=data["fio"])
+                    if users:
+                        set_user_online(db_name=self.db_name, table="voters", fio=data["fio"])
+                        print("user has already existed")
+                        conn.sendall("user exists".encode("utf-8"))
+                    else:
+                        conn.sendall("user doesn't exist".encode("utf-8"))
                 elif command[0] == "UPDATE":
                     voters = get_users_online(self.db_name, "voters")
                     voters = [voter["fio"] for voter in voters]
