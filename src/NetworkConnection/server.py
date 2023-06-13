@@ -21,7 +21,7 @@ class ServerError(Exception):
 class Server(QObject):
     finished = pyqtSignal()
 
-    def __init__(self, db_name, passphrase, addr="192.168.1.6", port=62000, buffer_size=1024, log=True):
+    def __init__(self, db_name, passphrase, addr="192.168.1.15", port=62000, buffer_size=1024, log=True):
         super().__init__()
         self.is_active = False
         self.buffer_size = buffer_size

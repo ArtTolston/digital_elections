@@ -1,5 +1,6 @@
 import json
 import socket
+import ipaddress
 
 
 class ClientError(Exception):
@@ -7,14 +8,12 @@ class ClientError(Exception):
 
 
 class Client:
-    def __init__(self, host='192.168.0.7', port=62000, timeout=None, buffer_size=1024):
-        self.host = host
-        # self.host = '192.168.1.4'
+    def __init__(self, subnet='192.168.1.0/24', port=62000, timeout=None, buffer_size=1024):
         self.port = port
         self.timeout = timeout
         self.buffer_size = buffer_size
         self.action = None
-        self.host = self.find_server()
+        self.host = self.find_server(subnet)
         print("here")
         try:
             self.connection = socket.create_connection((self.host, self.port), timeout)
@@ -64,15 +63,12 @@ class Client:
         command = ("BYE",)
         self._send(json.dumps(command).encode('utf-8'))
 
-    def find_server(self):
+    def find_server(self, subnet):
         print("find")
         server_addr = ""
         with socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM) as sock:
-            start_address = 9
-            end_address = 1
-            for i in range(start_address, end_address, -1):
-                address = f"192.168.1.{i}"
-                # address = "127.0.0.1"
+            for address in ipaddress.ip_network(subnet):
+                address = str(address)
                 print(f"looking for address: {address}")
                 try:
 

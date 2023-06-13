@@ -26,7 +26,7 @@ class Ui_MainWindow(object):
     def __init__(self):
         self.fio = None
 
-    def setupUi(self, MainWindow):
+    def setupUi(self, MainWindow, argv):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(754, 593)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -117,7 +117,11 @@ class Ui_MainWindow(object):
         ####################################
 
         self.fio = ""
-        self.client = Client()
+        if len(argv) > 1:
+            print(argv[1])
+            self.client = Client(argv[1])
+        else:
+            self.client = Client()
         self.passphrase = "NiktoNeUgadaet"
         self.public_key = b""
 
@@ -242,6 +246,6 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
+    ui.setupUi(MainWindow, sys.argv)
     MainWindow.show()
     sys.exit(app.exec_())
