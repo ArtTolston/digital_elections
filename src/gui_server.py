@@ -18,7 +18,7 @@ from Crypto.PublicKey import RSA
 import os
 
 class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
+    def setupUi(self, MainWindow, argv):
         MainWindow.setObjectName("Server_epta")
         MainWindow.resize(802, 607)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -125,7 +125,8 @@ class Ui_MainWindow(object):
         # Create a QThread object
         self.thread = QThread()
         # Create a server object
-        self.server = Server(db_name=self.db_name, passphrase=self.passphrase, addr="192.168.1.15")
+        self.server = None
+        self.server = Server(db_name=self.db_name, passphrase=self.passphrase)
         # Move server to the thread
         self.server.moveToThread(self.thread)
         # Connect signals and slots
@@ -206,7 +207,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
+    ui.setupUi(MainWindow, sys.argv)
     MainWindow.show()
     err = app.exec_()
     sys.exit(err)

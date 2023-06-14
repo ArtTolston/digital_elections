@@ -21,10 +21,11 @@ class ServerError(Exception):
 class Server(QObject):
     finished = pyqtSignal()
 
-    def __init__(self, db_name, passphrase, addr="192.168.1.15", port=62000, buffer_size=1024, log=True):
+    def __init__(self, db_name, passphrase, addr="0.0.0.0", port=62000, buffer_size=1024, log=True):
         super().__init__()
         self.is_active = False
         self.buffer_size = buffer_size
+        self.port = port
         self.socket_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.state = True
@@ -118,6 +119,8 @@ class Server(QObject):
 
     def run(self):
         self.is_active = True
+        udp_server = threading.Thread(target=self.udp_server)
+        udp_server.start()
         while True:
             conn, addr = self.socket_server.accept()
             th = threading.Thread(target=self.process_request,
@@ -126,3 +129,15 @@ class Server(QObject):
             if not self.is_active:
                 break
         self.finished.emit()
+
+    def udp_server(self):
+        server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        server.bind(("0.0.0.0", self.port))
+
+        while True:
+            data, addr = server.recvfrom(self.buffer_size)
+            print(addr)
+            if data.decode() == "HELLO SERVER":
+                server.sendto("ITS YOUR SERVER".encode("utf-8"), addr)
+

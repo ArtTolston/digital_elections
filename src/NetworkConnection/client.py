@@ -8,12 +8,12 @@ class ClientError(Exception):
 
 
 class Client:
-    def __init__(self, subnet='192.168.1.0/24', port=62000, timeout=None, buffer_size=1024):
+    def __init__(self, port=62000, timeout=None, buffer_size=1024):
         self.port = port
         self.timeout = timeout
         self.buffer_size = buffer_size
         self.action = None
-        self.host = self.find_server(subnet)
+        self.host = self.find_server()
         print("here")
         try:
             self.connection = socket.create_connection((self.host, self.port), timeout)
@@ -63,29 +63,18 @@ class Client:
         command = ("BYE",)
         self._send(json.dumps(command).encode('utf-8'))
 
-    def find_server(self, subnet):
+    def find_server(self):
         print("find")
-        server_addr = ""
-        with socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM) as sock:
-            for address in ipaddress.ip_network(subnet):
-                address = str(address)
-                print(f"looking for address: {address}")
-                try:
+        print(socket.INADDR_BROADCAST)
+        s = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-                    sock.connect((address, self.port))
-                    print(f"after connect")
-                    command = ("HELLO",)
-                    sock.sendall(json.dumps(command).encode())
-                    print(f"after sendall")
-                    response = sock.recv(self.buffer_size)
-                    print(f"after recv")
-                    code = json.loads(response.decode())
-                    if code != "HELLO":
-                        print(f"Address {address} is server but not responds correctly")
-                        continue
-                    print(f"Address {address} is server")
-                    server_addr = address
-                    return server_addr
-                except socket.error:
-                    print(f"Address {address} is not active")
+        s.sendto("HELLO SERVER".encode("utf-8"), (str(socket.INADDR_BROADCAST), self.port))
+        # s.bind(("" ,self.port))
+        while True:
+            data, addr = s.recvfrom(self.buffer_size)
+            if data.decode() == "ITS YOUR SERVER":
+                server_addr = str(addr[0])
+                return server_addr
 
