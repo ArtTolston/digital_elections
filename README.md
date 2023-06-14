@@ -29,5 +29,7 @@ libs to be installed: PyQt5, json, socket, threading, sqlite3, Crypto, os
 
 #### Workflow:
 - Launch server by `python gui_server.py`
-- Launch clients by `python gui_client.py`
-- Vote
+- Launch clients by `python gui_client.py subnet`, where "subnet" is subnet, where server is launched
+- Add user from client. If it exists, warning appers.
+- Server creates list of voters and submit question to client's machines
+- Server counts votes and show results
