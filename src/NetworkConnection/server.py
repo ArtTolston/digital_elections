@@ -128,6 +128,7 @@ class Server(QObject):
             th.start()
             if not self.is_active:
                 break
+
         self.finished.emit()
 
     def udp_server(self):

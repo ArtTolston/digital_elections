@@ -193,6 +193,15 @@ class Ui_MainWindow(object):
 
 
     def vote(self):
+        can_vote = False
+        for i in range(0, self.listWidget.count()):
+            if str(self.fio).upper() == self.listWidget.item(i).text():
+                can_vote = True
+        if not can_vote:
+            q = QMessageBox()
+            q.setText(f'User {str(self.fio).upper()} doesnt participate in voting')
+            q.exec()
+            return
         if self.noBox.isChecked() and self.yesBox.isChecked():
             self.client.bye()
         elif self.noBox.isChecked():

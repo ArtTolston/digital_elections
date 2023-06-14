@@ -6,9 +6,7 @@ CREATE TABLE voters (
 
 CREATE TABLE elections (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    question TEXT NOT NULL,
-                    amount INTEGER NOT NULL DEFAULT 100,
-                    results_true INTEGER);
+                    question TEXT NOT NULL);
 
 CREATE TABLE voters_elections_link (
                     id_voter INTEGER,

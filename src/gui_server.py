@@ -184,9 +184,7 @@ class Ui_MainWindow(object):
 
     def start_elections(self):
         question = self.lineEdit.text()
-        amount_of_voters = get_number_of_voters(self.db_name, "voters")
-
-        add_election(self.db_name, question, amount_of_voters)
+        add_election(self.db_name, question)
 
 
     def finish_elections(self):

@@ -90,7 +90,7 @@ def get_number_of_voters(db_name, table):
         return resp["cnt"]
 
 
-def add_election(db_name, question, amount):
+def add_election(db_name, question):
     with sqlite3.connect(db_name) as conn:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
@@ -104,7 +104,7 @@ def find_by_question(db_name, question):
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         print("find_by_question")
-        cur.execute("SELECT id, amount FROM elections WHERE question = ?", (question,))
+        cur.execute("SELECT id FROM elections WHERE question = ?", (question,))
         resp = cur.fetchall()
         cur.close()
         return resp
@@ -147,16 +147,12 @@ def count_votes(db_name, question):
 
         cur.execute("SELECT count(vote) as total FROM voters_elections_link WHERE id_election = ?", (election["id"],))
         total = cur.fetchone()["total"]
-        
+
         print(f'total {total}')
         cur.execute("SELECT count(vote) as true FROM voters_elections_link WHERE vote = 'true' AND id_election = ?", (election["id"], ))
         true = cur.fetchone()["true"]
         print(f'true {true}')
 
-        cur.execute("""UPDATE elections SET amount = ?,
-                    results_true = ?
-                    WHERE id = ?""", (total, true, election["id"]))
-        conn.commit()
         cur.close()
         return true / total, (total - true) / total
         
