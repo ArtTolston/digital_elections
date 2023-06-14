@@ -109,6 +109,7 @@ def find_by_question(db_name, question):
         cur.close()
         return resp
 
+
 def get_valid_election(db_name):
     with sqlite3.connect(db_name) as conn:
         conn.row_factory = sqlite3.Row
